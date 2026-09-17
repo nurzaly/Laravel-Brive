@@ -58,7 +58,7 @@ Route::middleware('auth', 'verified')->group(function () {
 
     Route::resource('/permission', PermissionController::class)->except('create', 'show', 'edit');
     Route::post('/permission/destroy-bulk', [PermissionController::class, 'destroyBulk'])->name('permission.destroy-bulk');
-    require __DIR__ . '/brive.php';
+    // require __DIR__ . '/brive.php';
 });
 
 require __DIR__ . '/auth.php';
