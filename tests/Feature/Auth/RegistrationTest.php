@@ -1,37 +1,23 @@
 <?php
 
-namespace Tests\Feature\Auth;
-
 use App\Models\User;
-use Database\Seeders\PermissionSeeder;
-use Database\Seeders\RoleSeeder;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
-class RegistrationTest extends TestCase
-{
-    use RefreshDatabase;
+it('does not offer a public registration page', function () {
+    $this->get('/register')->assertNotFound();
+});
 
-    public function test_registration_screen_can_be_rendered(): void
-    {
-        $response = $this->get('/register');
+it('does not accept public registrations', function () {
+    $this->post('/register', [
+        'name' => 'Test User',
+        'email' => 'test@example.com',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+    ])->assertNotFound();
 
-        $response->assertStatus(200);
-    }
+    $this->assertGuest();
+    expect(User::whereEmail('test@example.com')->exists())->toBeFalse();
+});
 
-    public function test_new_users_can_register(): void
-    {
-        $this->seed([PermissionSeeder::class, RoleSeeder::class]);
-
-        $response = $this->post('/register', [
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
-        ]);
-
-        $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
-        $this->assertTrue(User::whereEmail('test@example.com')->first()->hasRole('operator'));
-    }
-}
+it('hides the register link on the welcome page', function () {
+    $this->get('/')->assertInertia(fn ($page) => $page->where('canRegister', false));
+});
