@@ -23,8 +23,9 @@ class PermissionStoreRequest extends FormRequest
      * @return array<string, mixed>
      */
     public function rules()
-    {return [
-        'name' => 'required|string|max:255|unique:'.Permission::class,
-    ];
+    {
+        return [
+            'name' => 'required|string|max:255|unique:'.Permission::class,
+        ];
     }
 }

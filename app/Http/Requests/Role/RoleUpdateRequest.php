@@ -26,6 +26,7 @@ class RoleUpdateRequest extends FormRequest
         if (! $this->user()->isSuperAdmin()) {
             $exists->whereNotIn('name', ['create permission', 'read permission', 'update permission', 'delete permission']);
         }
+
         return [$exists];
     }
 
@@ -37,8 +38,8 @@ class RoleUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|unique:roles,name,' . $this->role->id,
-            'permissions'   => ['required', 'array'],
+            'name' => 'required|unique:roles,name,'.$this->role->id,
+            'permissions' => ['required', 'array'],
             'permissions.*' => $this->permissionItemRules(),
         ];
     }

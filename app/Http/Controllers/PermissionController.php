@@ -8,10 +8,11 @@ use App\Http\Requests\Permission\PermissionUpdateRequest;
 use App\Models\Permission;
 use App\Models\Role;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Inertia\Inertia;
+use Illuminate\Http\Response;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class PermissionController extends Controller implements HasMiddleware
 {
@@ -28,7 +29,7 @@ class PermissionController extends Controller implements HasMiddleware
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index(PermissionIndexRequest $request)
     {
@@ -44,19 +45,20 @@ class PermissionController extends Controller implements HasMiddleware
             $permissions->orderBy($request->field, $request->order);
         }
         $perPage = $request->has('perPage') ? $request->perPage : 10;
+
         return Inertia::render('Permission/Index', [
-            'title'         => __('app.label.permission'),
-            'filters'       => $request->all(['search', 'field', 'order']),
-            'perPage'       => (int) $perPage,
-            'permissions'   => $permissions->paginate($perPage),
-            'breadcrumbs'   => [['label' => __('app.label.permission'), 'href' => route('permission.index')]],
+            'title' => __('app.label.permission'),
+            'filters' => $request->all(['search', 'field', 'order']),
+            'perPage' => (int) $perPage,
+            'permissions' => $permissions->paginate($perPage),
+            'breadcrumbs' => [['label' => __('app.label.permission'), 'href' => route('permission.index')]],
         ]);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -66,23 +68,25 @@ class PermissionController extends Controller implements HasMiddleware
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  Request  $request
+     * @return Response
      */
     public function store(PermissionStoreRequest $request)
     {
         DB::beginTransaction();
         try {
             $permission = Permission::create([
-                'name'          => $request->name
+                'name' => $request->name,
             ]);
             $superadmin = Role::whereName('superadmin')->first();
             $superadmin->givePermissionTo([$request->name]);
             DB::commit();
+
             return back()->with('success', __('app.label.created_successfully', ['name' => $permission->name]));
         } catch (\Throwable $th) {
             DB::rollback();
             report($th);
+
             return back()->with('error', __('app.label.created_error', ['name' => __('app.label.permission')]));
         }
     }
@@ -90,8 +94,7 @@ class PermissionController extends Controller implements HasMiddleware
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Permission  $permission
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show(Permission $permission)
     {
@@ -101,8 +104,7 @@ class PermissionController extends Controller implements HasMiddleware
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Permission  $permission
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit(Permission $permission)
     {
@@ -112,9 +114,8 @@ class PermissionController extends Controller implements HasMiddleware
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Permission  $permission
-     * @return \Illuminate\Http\Response
+     * @param  Request  $request
+     * @return Response
      */
     public function update(PermissionUpdateRequest $request, Permission $permission)
     {
@@ -123,14 +124,16 @@ class PermissionController extends Controller implements HasMiddleware
             $superadmin = Role::whereName('superadmin')->first();
             $superadmin->revokePermissionTo([$permission->name]);
             $permission->update([
-                'name'          => $request->name
+                'name' => $request->name,
             ]);
             $superadmin->givePermissionTo([$permission->name]);
             DB::commit();
+
             return back()->with('success', __('app.label.updated_successfully', ['name' => $permission->name]));
         } catch (\Throwable $th) {
             DB::rollback();
             report($th);
+
             return back()->with('error', __('app.label.updated_error', ['name' => $permission->name]));
         }
     }
@@ -138,8 +141,7 @@ class PermissionController extends Controller implements HasMiddleware
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Permission  $permission
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy(Permission $permission)
     {
@@ -149,10 +151,12 @@ class PermissionController extends Controller implements HasMiddleware
             $superadmin->revokePermissionTo([$permission->name]);
             $permission->delete();
             DB::commit();
+
             return back()->with('success', __('app.label.deleted_successfully', ['name' => $permission->name]));
         } catch (\Throwable $th) {
             DB::rollback();
             report($th);
+
             return back()->with('error', __('app.label.deleted_error', ['name' => $permission->name]));
         }
     }
@@ -162,10 +166,12 @@ class PermissionController extends Controller implements HasMiddleware
         try {
             $permission = Permission::whereIn('id', $request->id);
             $permission->delete();
-            return back()->with('success', __('app.label.deleted_successfully', ['name' => count($request->id) . ' ' . __('app.label.permission')]));
+
+            return back()->with('success', __('app.label.deleted_successfully', ['name' => count($request->id).' '.__('app.label.permission')]));
         } catch (\Throwable $th) {
             report($th);
-            return back()->with('error', __('app.label.deleted_error', ['name' => count($request->id) . ' ' . __('app.label.permission')]));
+
+            return back()->with('error', __('app.label.deleted_error', ['name' => count($request->id).' '.__('app.label.permission')]));
         }
     }
 }

@@ -27,6 +27,7 @@ class RoleStoreRequest extends FormRequest
         if (! $this->user()->isSuperAdmin()) {
             $exists->whereNotIn('name', ['create permission', 'read permission', 'update permission', 'delete permission']);
         }
+
         return [$exists];
     }
 
@@ -39,7 +40,7 @@ class RoleStoreRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255|unique:'.Role::class,
-            'permissions'   => ['required', 'array'],
+            'permissions' => ['required', 'array'],
             'permissions.*' => $this->permissionItemRules(),
         ];
     }

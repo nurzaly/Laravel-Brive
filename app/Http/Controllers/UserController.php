@@ -8,12 +8,13 @@ use App\Http\Requests\User\UserUpdateRequest;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Inertia\Inertia;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
+use Illuminate\Http\Response;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Inertia\Inertia;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class UserController extends Controller implements HasMiddleware
 {
@@ -30,7 +31,7 @@ class UserController extends Controller implements HasMiddleware
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index(UserIndexRequest $request)
     {
@@ -53,20 +54,21 @@ class UserController extends Controller implements HasMiddleware
             });
             $roles = Role::where('name', '<>', 'superadmin')->get();
         }
+
         return Inertia::render('User/Index', [
-            'title'         => __('app.label.user'),
-            'filters'       => $request->all(['search', 'field', 'order']),
-            'perPage'       => (int) $perPage,
-            'users'         => $users->with('roles')->paginate($perPage),
-            'roles'         => $roles,
-            'breadcrumbs'   => [['label' => __('app.label.user'), 'href' => route('user.index')]],
+            'title' => __('app.label.user'),
+            'filters' => $request->all(['search', 'field', 'order']),
+            'perPage' => (int) $perPage,
+            'users' => $users->with('roles')->paginate($perPage),
+            'roles' => $roles,
+            'breadcrumbs' => [['label' => __('app.label.user'), 'href' => route('user.index')]],
         ]);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -76,8 +78,8 @@ class UserController extends Controller implements HasMiddleware
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  Request  $request
+     * @return Response
      */
     public function store(UserStoreRequest $request)
     {
@@ -90,10 +92,12 @@ class UserController extends Controller implements HasMiddleware
             ]);
             $user->assignRole($request->role);
             DB::commit();
+
             return back()->with('success', __('app.label.created_successfully', ['name' => $user->name]));
         } catch (\Throwable $th) {
             DB::rollback();
             report($th);
+
             return back()->with('error', __('app.label.created_error', ['name' => __('app.label.user')]));
         }
     }
@@ -102,7 +106,7 @@ class UserController extends Controller implements HasMiddleware
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show($id)
     {
@@ -113,7 +117,7 @@ class UserController extends Controller implements HasMiddleware
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit($id)
     {
@@ -123,9 +127,9 @@ class UserController extends Controller implements HasMiddleware
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(UserUpdateRequest $request, $id)
     {
@@ -134,19 +138,21 @@ class UserController extends Controller implements HasMiddleware
             $user = User::findOrFail($id);
             $this->ensureCanManage($user);
             $user->update([
-                'name'      => $request->name,
-                'email'     => $request->email,
-                'password'  => $request->password ? Hash::make($request->password) : $user->password,
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => $request->password ? Hash::make($request->password) : $user->password,
             ]);
             $user->syncRoles($request->role);
             DB::commit();
+
             return back()->with('success', __('app.label.updated_successfully', ['name' => $user->name]));
-        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+        } catch (HttpException $e) {
             DB::rollback();
             throw $e;
         } catch (\Throwable $th) {
             DB::rollback();
             report($th);
+
             return back()->with('error', __('app.label.updated_error', ['name' => $user->name]));
         }
     }
@@ -155,7 +161,7 @@ class UserController extends Controller implements HasMiddleware
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy(User $user)
     {
@@ -163,9 +169,11 @@ class UserController extends Controller implements HasMiddleware
         abort_if($user->is(auth()->user()), 403);
         try {
             $user->delete();
+
             return back()->with('success', __('app.label.deleted_successfully', ['name' => $user->name]));
         } catch (\Throwable $th) {
             report($th);
+
             return back()->with('error', __('app.label.deleted_error', ['name' => $user->name]));
         }
     }
@@ -178,10 +186,12 @@ class UserController extends Controller implements HasMiddleware
                 $user->whereDoesntHave('roles', fn ($query) => $query->where('name', 'superadmin'));
             }
             $user->delete();
-            return back()->with('success', __('app.label.deleted_successfully', ['name' => count($request->id) . ' ' . __('app.label.user')]));
+
+            return back()->with('success', __('app.label.deleted_successfully', ['name' => count($request->id).' '.__('app.label.user')]));
         } catch (\Throwable $th) {
             report($th);
-            return back()->with('error', __('app.label.deleted_error', ['name' => count($request->id) . ' ' . __('app.label.user')]));
+
+            return back()->with('error', __('app.label.deleted_error', ['name' => count($request->id).' '.__('app.label.user')]));
         }
     }
 

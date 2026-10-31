@@ -15,7 +15,7 @@ return [
         'forgot_password' => 'Lupa kata sandi Anda? Tidak masalah. Cukup beri tahu kami alamat email Anda dan kami akan mengirimkan email kepada Anda tautan pengaturan ulang kata sandi yang memungkinkan Anda memilih yang baru.',
         'reset_password' => 'Atur ulang kata sandi',
         'confirm_password' => 'Ini adalah area aplikasi yang aman. Harap konfirmasi kata sandi Anda sebelum melanjutkan.',
-        'verify_email' => "Terima kasih telah mendaftar! Sebelum memulai, dapatkah Anda memverifikasi alamat email Anda dengan mengeklik tautan yang baru saja kami kirimkan melalui email kepada Anda? Jika Anda tidak menerima email tersebut, dengan senang hati kami akan mengirimkan email lainnya kepada Anda.",
+        'verify_email' => 'Terima kasih telah mendaftar! Sebelum memulai, dapatkah Anda memverifikasi alamat email Anda dengan mengeklik tautan yang baru saja kami kirimkan melalui email kepada Anda? Jika Anda tidak menerima email tersebut, dengan senang hati kami akan mengirimkan email lainnya kepada Anda.',
         'data' => 'Data',
         'user' => 'Pengguna',
         'access' => 'Akses',
@@ -25,7 +25,7 @@ return [
         'profile' => 'Profil',
         'setting' => 'Pengaturan',
         'help' => 'Bantuan',
-        'loged_in' => "Kamu berhasil masuk!",
+        'loged_in' => 'Kamu berhasil masuk!',
         'logout' => 'Keluar',
         'created' => 'Dibuat',
         'updated' => 'Diubah',
@@ -72,7 +72,7 @@ return [
         'delete' => 'Hapus',
         'prev' => 'Sebelumnya',
         'next' => 'Selanjutnya',
-        'delete_account' => 'Hapus Akun'
+        'delete_account' => 'Hapus Akun',
     ],
     'placeholder' => [
         'search' => 'Cari...',
@@ -92,7 +92,7 @@ return [
     ],
     'profile' => [
         'profile_information' => 'Informasi Profil',
-        'update_profile' => "Perbarui informasi akun profil dan alamat email anda.",
+        'update_profile' => 'Perbarui informasi akun profil dan alamat email anda.',
         'unverified_email' => 'Alamat email anda belum diverifikasi.',
         'resend_email_verification' => 'Klik di sini untuk mengirimkan kembali email verifikasi.',
         'sent_verification_email' => 'Tautan email verifikasi berhasil dikirmkan ke alamat email anda.',
@@ -104,6 +104,6 @@ return [
         'delete_account' => 'Hapus Akun',
         'delete_account_caption' => 'Saat akun anda dihapus, semua sumber daya dan data akan dihapus permanen. Sebelum menghapus akun anda, harap unduh semua data atau informasi yang anda butuhkan.',
         'delete_account_modal_title' => 'Apakah anda yakin akan menghapus akun?',
-        'delete_account_modal_caption' => 'Saat akun anda dihapus, semua sumber daya dan data akan dihapus permanen.  Silakan masukkan kata sandi Anda untuk mengonfirmasi bahwa Anda ingin menghapus akun Anda secara permanen.'
+        'delete_account_modal_caption' => 'Saat akun anda dihapus, semua sumber daya dan data akan dihapus permanen.  Silakan masukkan kata sandi Anda untuk mengonfirmasi bahwa Anda ingin menghapus akun Anda secara permanen.',
     ],
 ];

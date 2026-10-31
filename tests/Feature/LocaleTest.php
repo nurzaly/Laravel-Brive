@@ -7,5 +7,5 @@ it('stores a supported locale in the session', function (string $locale) {
 })->with(['en', 'id']);
 
 it('rejects an unsupported locale', function (string $locale) {
-    $this->get('/setLang/' . $locale)->assertNotFound();
+    $this->get('/setLang/'.$locale)->assertNotFound();
 })->with(['xx', '..%2F..', 'en-US']);

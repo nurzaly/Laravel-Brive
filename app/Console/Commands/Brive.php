@@ -7,7 +7,8 @@ use App\Models\Role;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
-use function Termwind\{render};
+
+use function Termwind\render;
 
 class Brive extends Command
 {
@@ -33,23 +34,23 @@ class Brive extends Command
         $name = ucfirst($this->argument('name'));
         $this->makeDir(resource_path("/js/Pages/{$name}"));
         $this->makeDir(app_path("/HTTP/Requests/{$name}"));
-        $this->makeDir(base_path("/routes/brive"));
+        $this->makeDir(base_path('/routes/brive'));
         File::append(
             base_path('routes/brive.php'),
-            "require __DIR__.'/brive/" . strtolower($name) . ".php';
+            "require __DIR__.'/brive/".strtolower($name).".php';
 "
         );
 
-        Permission::create(['name' => strtolower($name) . ' delete', 'guard_name' => 'web']);
-        Permission::create(['name' => strtolower($name) . ' update', 'guard_name' => 'web']);
-        Permission::create(['name' => strtolower($name) . ' read', 'guard_name' => 'web']);
-        Permission::create(['name' => strtolower($name) . ' create', 'guard_name' => 'web']);
+        Permission::create(['name' => strtolower($name).' delete', 'guard_name' => 'web']);
+        Permission::create(['name' => strtolower($name).' update', 'guard_name' => 'web']);
+        Permission::create(['name' => strtolower($name).' read', 'guard_name' => 'web']);
+        Permission::create(['name' => strtolower($name).' create', 'guard_name' => 'web']);
         $superadmin = Role::where(['name' => 'superadmin'])->first();
         $superadmin->givePermissionTo([
-            strtolower($name) . ' delete',
-            strtolower($name) . ' update',
-            strtolower($name) . ' read',
-            strtolower($name) . ' create',
+            strtolower($name).' delete',
+            strtolower($name).' update',
+            strtolower($name).' read',
+            strtolower($name).' create',
         ]);
 
         render(view('cli.brive', [
@@ -64,8 +65,8 @@ class Brive extends Command
             'pageDelete' => $this->pageDelete($name),
             'pageDeleteBulk' => $this->pageDeleteBulk($name),
             'pageEdit' => $this->pageEdit($name),
-            'permission' => strtolower($name) . " permission",
-            'route' => $this->route($name)
+            'permission' => strtolower($name).' permission',
+            'route' => $this->route($name),
         ]));
 
         return self::SUCCESS;
@@ -89,6 +90,7 @@ class Brive extends Command
             $this->getStub('Controller')
         );
         file_put_contents(app_path("/Http/Controllers/{$name}Controller.php"), $params);
+
         return "app/Http/Controllers/{$name}Controller.php";
     }
 
@@ -100,6 +102,7 @@ class Brive extends Command
             $this->getStub('Model')
         );
         file_put_contents(app_path("/Models/{$name}.php"), $params);
+
         return "app/Models/{$name}.php";
     }
 
@@ -115,9 +118,10 @@ class Brive extends Command
             ],
             $this->getStub('Migration')
         );
-        $path = "/migrations/" . date('Y_m_d_His_') . "create_{$modelNamePluralLowerCase}_table.php";
+        $path = '/migrations/'.date('Y_m_d_His_')."create_{$modelNamePluralLowerCase}_table.php";
         file_put_contents(database_path($path), $params);
-        return "database/" . $path;
+
+        return 'database/'.$path;
     }
 
     public function indexRequest($name): string
@@ -133,7 +137,8 @@ class Brive extends Command
         );
         $path = "/HTTP/Requests/{$name}/{$name}IndexRequest.php";
         file_put_contents(app_path($path), $params);
-        return "app" . $path;
+
+        return 'app'.$path;
     }
 
     public function storeRequest($name): string
@@ -149,7 +154,8 @@ class Brive extends Command
         );
         $path = "/HTTP/Requests/{$name}/{$name}StoreRequest.php";
         file_put_contents(app_path($path), $params);
-        return "app" . $path;
+
+        return 'app'.$path;
     }
 
     public function updateRequest($name): string
@@ -165,7 +171,8 @@ class Brive extends Command
         );
         $path = "/HTTP/Requests/{$name}/{$name}UpdateRequest.php";
         file_put_contents(app_path($path), $params);
-        return "app" . $path;
+
+        return 'app'.$path;
     }
 
     public function pageIndex($name): string
@@ -185,7 +192,8 @@ class Brive extends Command
         );
         $path = "/js/Pages/{$name}/Index.vue";
         file_put_contents(resource_path($path), $params);
-        return "resources" . $path;
+
+        return 'resources'.$path;
     }
 
     public function pageCreate($name): string
@@ -203,7 +211,8 @@ class Brive extends Command
         );
         $path = "/js/Pages/{$name}/Create.vue";
         file_put_contents(resource_path($path), $params);
-        return "resources" . $path;
+
+        return 'resources'.$path;
     }
 
     public function pageDelete($name): string
@@ -219,7 +228,8 @@ class Brive extends Command
         );
         $path = "/js/Pages/{$name}/Delete.vue";
         file_put_contents(resource_path($path), $params);
-        return "resources" . $path;
+
+        return 'resources'.$path;
     }
 
     public function pageDeleteBulk($name): string
@@ -235,7 +245,8 @@ class Brive extends Command
         );
         $path = "/js/Pages/{$name}/DeleteBulk.vue";
         file_put_contents(resource_path($path), $params);
-        return "resources" . $path;
+
+        return 'resources'.$path;
     }
 
     public function pageEdit($name): string
@@ -253,7 +264,8 @@ class Brive extends Command
         );
         $path = "/js/Pages/{$name}/Edit.vue";
         file_put_contents(resource_path($path), $params);
-        return "resources" . $path;
+
+        return 'resources'.$path;
     }
 
     public function route($name): string
@@ -269,9 +281,10 @@ class Brive extends Command
             ],
             $this->getStub('Route')
         );
-        $path = "/routes/brive/" . strtolower($name) . ".php";
+        $path = '/routes/brive/'.strtolower($name).'.php';
         file_put_contents(base_path($path), $params);
-        return "app" . $path;
+
+        return 'app'.$path;
     }
 
     protected function getStub($type)

@@ -34,14 +34,15 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard', [
-        'users'         => (int) User::count(),
-        'roles'         => (int) Role::count(),
-        'permissions'   => (int) Permission::count(),
+        'users' => (int) User::count(),
+        'roles' => (int) Role::count(),
+        'permissions' => (int) Permission::count(),
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/setLang/{locale}', function ($locale) {
     Session::put('locale', $locale);
+
     return back();
 })->whereIn('locale', ['en', 'id'])->name('setlang');
 
@@ -61,4 +62,4 @@ Route::middleware('auth', 'verified')->group(function () {
     // require __DIR__ . '/brive.php';
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

@@ -72,7 +72,7 @@ return [
         'delete' => 'Delete',
         'prev' => 'Prev',
         'next' => 'Next',
-        'delete_account' => 'Delete Account'
+        'delete_account' => 'Delete Account',
     ],
     'placeholder' => [
         'search' => 'Search...',

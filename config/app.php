@@ -1,6 +1,5 @@
 <?php
 
-
 return [
 
     /*
@@ -141,7 +140,5 @@ return [
         'driver' => 'file',
         // 'store'  => 'redis',
     ],
-
-
 
 ];

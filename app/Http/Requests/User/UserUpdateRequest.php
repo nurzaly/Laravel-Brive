@@ -27,6 +27,7 @@ class UserUpdateRequest extends FormRequest
         if (! $this->user()->isSuperAdmin()) {
             $rules[] = Rule::notIn(['superadmin']);
         }
+
         return $rules;
     }
 
@@ -38,11 +39,11 @@ class UserUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name'                  => ['required', 'string', 'max:255'],
-            'email'                 => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($this->route('user'))],
-            'password'              => ['nullable', 'confirmed', Password::defaults()],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($this->route('user'))],
+            'password' => ['nullable', 'confirmed', Password::defaults()],
             'password_confirmation' => 'sometimes|required_with:password|same:password',
-            'role'                  => $this->roleRules(),
+            'role' => $this->roleRules(),
         ];
     }
 }
