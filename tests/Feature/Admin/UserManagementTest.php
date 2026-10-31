@@ -72,7 +72,8 @@ describe('store', function () {
     it('lets an admin create an operator', function () {
         $this->actingAs(userWithRole('admin'))
             ->post(route('user.store'), newUserPayload())
-            ->assertSessionHasNoErrors();
+            ->assertSessionHasNoErrors()
+            ->assertSessionHas('success', 'New User created successfully.');
 
         expect(User::whereEmail('new@example.com')->first()->hasRole('operator'))->toBeTrue();
     });
