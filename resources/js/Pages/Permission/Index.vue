@@ -244,10 +244,10 @@ const select = () => {
                                     {{ permission.guard_name }}
                                 </td>
                                 <td class="whitespace-nowrap py-4 px-2 sm:py-3">
-                                    {{ permission.created_at }}
+                                    {{ formatDate(permission.created_at) }}
                                 </td>
                                 <td class="whitespace-nowrap py-4 px-2 sm:py-3">
-                                    {{ permission.updated_at }}
+                                    {{ formatDate(permission.updated_at) }}
                                 </td>
                                 <td class="whitespace-nowrap py-4 px-2 sm:py-3">
                                     <div

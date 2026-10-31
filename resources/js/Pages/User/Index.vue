@@ -266,10 +266,10 @@ const select = () => {
                                     }}
                                 </td>
                                 <td class="whitespace-nowrap py-4 px-2 sm:py-3">
-                                    {{ user.created_at }}
+                                    {{ formatDate(user.created_at) }}
                                 </td>
                                 <td class="whitespace-nowrap py-4 px-2 sm:py-3">
-                                    {{ user.updated_at }}
+                                    {{ formatDate(user.updated_at) }}
                                 </td>
                                 <td class="whitespace-nowrap py-4 px-2 sm:py-3">
                                     <div

@@ -5,9 +5,9 @@ import "floating-vue/dist/style.css";
 import { createApp, h } from "vue";
 import { createInertiaApp } from "@inertiajs/vue3";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
-import { ZiggyVue } from "../../vendor/tightenco/ziggy/dist/vue.m";
+import { ZiggyVue } from "../../vendor/tightenco/ziggy";
 import FloatingVue from "floating-vue";
-import { usePage } from "@inertiajs/vue3";
+import helpers from "./plugins/helpers";
 
 const appName =
     window.document.getElementsByTagName("title")[0]?.innerText || "Laravel";
@@ -22,23 +22,9 @@ createInertiaApp({
     setup({ el, App, props, plugin }) {
         return createApp({ render: () => h(App, props) })
             .use(plugin)
-            .use(ZiggyVue, Ziggy)
+            .use(ZiggyVue)
             .use(FloatingVue)
-            .mixin({
-                methods: {
-                    can: function (permissions) {
-                        var allPermissions = this.$page.props.auth.can;
-                        var hasPermission = false;
-                        permissions.forEach(function (item) {
-                            if (allPermissions[item]) hasPermission = true;
-                        });
-                        return hasPermission;
-                    },
-                    lang: function () {
-                        return usePage().props.language.original;
-                    },
-                },
-            })
+            .use(helpers)
             .mount(el);
     },
     progress: {

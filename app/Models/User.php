@@ -34,19 +34,16 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    public function getCreatedAtAttribute()
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
     {
-        return date('d-m-Y H:i', strtotime($this->attributes['created_at']));
-    }
-
-    public function getUpdatedAtAttribute()
-    {
-        return date('d-m-Y H:i', strtotime($this->attributes['updated_at']));
-    }
-
-    public function getEmailVerifiedAtAttribute()
-    {
-        return $this->attributes['email_verified_at'] == null ? null:date('d-m-Y H:i', strtotime($this->attributes['email_verified_at']));
+        return [
+            'email_verified_at' => 'datetime',
+        ];
     }
 
     public function isSuperAdmin(): bool

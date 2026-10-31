@@ -290,10 +290,10 @@ const select = () => {
                                     {{ lang().label.no_permission }}
                                 </td>
                                 <td class="whitespace-nowrap py-4 px-2 sm:py-3">
-                                    {{ role.created_at }}
+                                    {{ formatDate(role.created_at) }}
                                 </td>
                                 <td class="whitespace-nowrap py-4 px-2 sm:py-3">
-                                    {{ role.updated_at }}
+                                    {{ formatDate(role.updated_at) }}
                                 </td>
                                 <td class="whitespace-nowrap py-4 px-2 sm:py-3">
                                     <div

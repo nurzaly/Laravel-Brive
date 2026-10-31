@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
-use Tightenco\Ziggy\Ziggy;
+use Tighten\Ziggy\Ziggy;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -57,10 +57,7 @@ class HandleInertiaRequests extends Middleware
                 }
                 return app()->getLocale();
             },
-            'language' => function () {
-                $lang = __('app');
-                return response()->json($lang);
-            },
+            'language' => fn () => __('app'),
             'ziggy' => function () use ($request) {
                 return array_merge((new Ziggy)->toArray(), [
                     'location' => $request->url(),
