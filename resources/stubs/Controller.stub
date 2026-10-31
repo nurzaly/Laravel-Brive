@@ -8,15 +8,19 @@ use App\Http\Requests\{{modelName}}\{{modelName}}UpdateRequest;
 use App\Models\{{modelName}};
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class {{modelName}}Controller extends Controller
+class {{modelName}}Controller extends Controller implements HasMiddleware
 {
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('permission:{{modelNameLowerCase}} create', ['only' => ['create', 'store']]);
-        $this->middleware('permission:{{modelNameLowerCase}} read', ['only' => ['index', 'show']]);
-        $this->middleware('permission:{{modelNameLowerCase}} update', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:{{modelNameLowerCase}} delete', ['only' => ['destroy', 'destroyBulk']]);
+        return [
+            new Middleware('permission:{{modelNameLowerCase}} create', only: ['create', 'store']),
+            new Middleware('permission:{{modelNameLowerCase}} read', only: ['index', 'show']),
+            new Middleware('permission:{{modelNameLowerCase}} update', only: ['edit', 'update']),
+            new Middleware('permission:{{modelNameLowerCase}} delete', only: ['destroy', 'destroyBulk']),
+        ];
     }
     /**
      * Display a listing of the resource.

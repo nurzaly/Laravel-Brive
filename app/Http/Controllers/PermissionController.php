@@ -10,17 +10,19 @@ use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class PermissionController extends Controller
+class PermissionController extends Controller implements HasMiddleware
 {
-
-    public function __construct()
+    public static function middleware(): array
     {
-
-        $this->middleware('permission:create permission', ['only' => ['create', 'store']]);
-        $this->middleware('permission:read permission', ['only' => ['index', 'show']]);
-        $this->middleware('permission:update permission', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:delete permission', ['only' => ['destroy', 'destroyBulk']]);
+        return [
+            new Middleware('permission:create permission', only: ['create', 'store']),
+            new Middleware('permission:read permission', only: ['index', 'show']),
+            new Middleware('permission:update permission', only: ['edit', 'update']),
+            new Middleware('permission:delete permission', only: ['destroy', 'destroyBulk']),
+        ];
     }
 
     /**

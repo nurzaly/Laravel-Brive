@@ -12,17 +12,19 @@ use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class UserController extends Controller
+class UserController extends Controller implements HasMiddleware
 {
-
-    public function __construct()
+    public static function middleware(): array
     {
-
-        $this->middleware('permission:create user', ['only' => ['create', 'store']]);
-        $this->middleware('permission:read user', ['only' => ['index', 'show']]);
-        $this->middleware('permission:update user', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:delete user', ['only' => ['destroy', 'destroyBulk']]);
+        return [
+            new Middleware('permission:create user', only: ['create', 'store']),
+            new Middleware('permission:read user', only: ['index', 'show']),
+            new Middleware('permission:update user', only: ['edit', 'update']),
+            new Middleware('permission:delete user', only: ['destroy', 'destroyBulk']),
+        ];
     }
 
     /**

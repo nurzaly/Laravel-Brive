@@ -10,16 +10,19 @@ use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class RoleController extends Controller
+class RoleController extends Controller implements HasMiddleware
 {
-    public function __construct()
+    public static function middleware(): array
     {
-
-        $this->middleware('permission:create role', ['only' => ['create', 'store']]);
-        $this->middleware('permission:read role', ['only' => ['index', 'show']]);
-        $this->middleware('permission:update role', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:delete role', ['only' => ['destroy', 'destroyBulk']]);
+        return [
+            new Middleware('permission:create role', only: ['create', 'store']),
+            new Middleware('permission:read role', only: ['index', 'show']),
+            new Middleware('permission:update role', only: ['edit', 'update']),
+            new Middleware('permission:delete role', only: ['destroy', 'destroyBulk']),
+        ];
     }
     /**
      * Display a listing of the resource.
