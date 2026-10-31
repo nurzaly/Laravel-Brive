@@ -36,7 +36,7 @@ defineProps({
             </div>
 
             <div
-                class="mt-4 bg-white dark:bg-slate-800 overflow-hidden shadow sm:rounded-lg"
+                class="mt-4 bg-white dark:bg-slate-800 overflow-hidden shadow-sm sm:rounded-lg"
             >
                 <div class="grid grid-cols-1">
                     <div class="p-6">

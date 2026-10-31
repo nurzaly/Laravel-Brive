@@ -132,7 +132,7 @@ const select = () => {
                 </div>
             </div>
             <div
-                class="relative bg-white dark:bg-slate-800 shadow sm:rounded-lg"
+                class="relative bg-white dark:bg-slate-800 shadow-sm sm:rounded-lg"
             >
                 <div class="flex justify-between p-2">
                     <div class="flex space-x-2">
@@ -226,13 +226,13 @@ const select = () => {
                             <tr
                                 v-for="(user, index) in users.data"
                                 :key="index"
-                                class="border-t border-slate-200 dark:border-slate-700 hover:bg-slate-200/30 hover:dark:bg-slate-900/20"
+                                class="border-t border-slate-200 dark:border-slate-700 hover:bg-slate-200/30 dark:hover:bg-slate-900/20"
                             >
                                 <td
                                     class="whitespace-nowrap py-4 px-2 sm:py-3 text-center"
                                 >
                                     <input
-                                        class="rounded dark:bg-slate-900 border-slate-300 dark:border-slate-700 text-primary dark:text-primary shadow-sm focus:ring-primary/80 dark:focus:ring-primary dark:focus:ring-offset-slate-800 dark:checked:bg-primary dark:checked:border-primary"
+                                        class="rounded-sm dark:bg-slate-900 border-slate-300 dark:border-slate-700 text-primary dark:text-primary shadow-xs focus:ring-primary/80 dark:focus:ring-primary dark:focus:ring-offset-slate-800 dark:checked:bg-primary dark:checked:border-primary"
                                         type="checkbox"
                                         @change="select"
                                         :value="user.id"
