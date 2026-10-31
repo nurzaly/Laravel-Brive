@@ -43,7 +43,7 @@ Route::get('/dashboard', function () {
 Route::get('/setLang/{locale}', function ($locale) {
     Session::put('locale', $locale);
     return back();
-})->name('setlang');
+})->whereIn('locale', ['en', 'id'])->name('setlang');
 
 Route::middleware('auth', 'verified')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

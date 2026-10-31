@@ -5,8 +5,7 @@
                 <div>
                     <CheckCircleIcon class="h-8 w-8 text-white" fill="currentColor" />
                 </div>
-                <div class="mx-3 text-sm font-medium text-white" v-html="flash.success">
-                </div>
+                <div class="mx-3 text-sm font-medium text-white">{{ flash.success }}</div>
                 <button @click="toggle" type="button"
                     class="ml-auto bg-white/20 text-white rounded-lg focus:ring-2 focus:ring-white/50 p-1.5 hover:bg-white/30 h-8 w-8">
                     <span class="sr-only">Close</span>
@@ -21,8 +20,7 @@
                 <div>
                     <InformationCircleIcon class="h-8 w-8 text-white" fill="currentColor" />
                 </div>
-                <div class="mx-3 text-sm font-medium text-white" v-html="flash.info">
-                </div>
+                <div class="mx-3 text-sm font-medium text-white">{{ flash.info }}</div>
                 <button @click="toggle" type="button"
                     class="ml-auto bg-white/20 text-white rounded-lg focus:ring-2 focus:ring-white/50 p-1.5 hover:bg-white/30 h-8 w-8">
                     <span class="sr-only">Close</span>
@@ -37,8 +35,7 @@
                 <div>
                     <ExclamationTriangleIcon class="h-8 w-8 text-white" fill="currentColor" />
                 </div>
-                <div class="mx-3 text-sm font-medium text-white" v-html="flash.warning">
-                </div>
+                <div class="mx-3 text-sm font-medium text-white">{{ flash.warning }}</div>
                 <button @click="toggle" type="button"
                     class="ml-auto bg-white/20 text-white rounded-lg focus:ring-2 focus:ring-white/50 p-1.5 hover:bg-white/30 h-8 w-8">
                     <span class="sr-only">Close</span>
@@ -53,8 +50,7 @@
                 <div>
                     <ExclamationCircleIcon class="h-8 w-8 text-white" fill="currentColor" />
                 </div>
-                <div class="mx-3 text-sm font-medium text-white" v-html="flash.error">
-                </div>
+                <div class="mx-3 text-sm font-medium text-white">{{ flash.error }}</div>
                 <button @click="toggle" type="button"
                     class="ml-auto bg-white/20 text-white rounded-lg focus:ring-2 focus:ring-white/50 p-1.5 hover:bg-white/30 h-8 w-8">
                     <XMarkIcon class="w-5 h-5" />

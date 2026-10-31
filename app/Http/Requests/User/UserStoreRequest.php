@@ -4,6 +4,7 @@ namespace App\Http\Requests\User;
 
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 class UserStoreRequest extends FormRequest
@@ -19,6 +20,18 @@ class UserStoreRequest extends FormRequest
     }
 
     /**
+     * Role rules: must exist, and only a superadmin may assign the superadmin role.
+     */
+    protected function roleRules(): array
+    {
+        $rules = ['required', 'string', Rule::exists('roles', 'name')];
+        if (! $this->user()->isSuperAdmin()) {
+            $rules[] = Rule::notIn(['superadmin']);
+        }
+        return $rules;
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, mixed>
@@ -29,7 +42,7 @@ class UserStoreRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:' . User::class,
             'password' => ['required', 'confirmed', Password::defaults()],
-            'role' => ['required'],
+            'role' => $this->roleRules(),
         ];
     }
 }

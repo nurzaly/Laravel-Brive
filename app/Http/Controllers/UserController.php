@@ -33,17 +33,19 @@ class UserController extends Controller
     public function index(UserIndexRequest $request)
     {
         $users = User::query();
-        if ($request->has('search')) {
-            $users->where('name', 'LIKE', "%" . $request->search . "%");
-            $users->orWhere('email', 'LIKE', "%" . $request->search . "%");
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $users->where(function ($query) use ($search) {
+                $query->where('name', 'LIKE', "%{$search}%")
+                    ->orWhere('email', 'LIKE', "%{$search}%");
+            });
         }
         if ($request->has(['field', 'order'])) {
             $users->orderBy($request->field, $request->order);
         }
         $perPage = $request->has('perPage') ? $request->perPage : 10;
-        $role = auth()->user()->roles->pluck('name')[0];
         $roles = Role::get();
-        if ($role != 'superadmin') {
+        if (! auth()->user()->isSuperAdmin()) {
             $users->whereHas('roles', function ($query) {
                 return $query->where('name', '<>', 'superadmin');
             });
@@ -89,7 +91,8 @@ class UserController extends Controller
             return back()->with('success', __('app.label.created_successfully', ['name' => $user->name]));
         } catch (\Throwable $th) {
             DB::rollback();
-            return back()->with('error', __('app.label.created_error', ['name' => __('app.label.user')]) . $th->getMessage());
+            report($th);
+            return back()->with('error', __('app.label.created_error', ['name' => __('app.label.user')]));
         }
     }
 
@@ -127,6 +130,7 @@ class UserController extends Controller
         DB::beginTransaction();
         try {
             $user = User::findOrFail($id);
+            $this->ensureCanManage($user);
             $user->update([
                 'name'      => $request->name,
                 'email'     => $request->email,
@@ -135,9 +139,13 @@ class UserController extends Controller
             $user->syncRoles($request->role);
             DB::commit();
             return back()->with('success', __('app.label.updated_successfully', ['name' => $user->name]));
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            DB::rollback();
+            throw $e;
         } catch (\Throwable $th) {
             DB::rollback();
-            return back()->with('error', __('app.label.updated_error', ['name' => $user->name]) . $th->getMessage());
+            report($th);
+            return back()->with('error', __('app.label.updated_error', ['name' => $user->name]));
         }
     }
 
@@ -149,22 +157,39 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        $this->ensureCanManage($user);
+        abort_if($user->is(auth()->user()), 403);
         try {
             $user->delete();
             return back()->with('success', __('app.label.deleted_successfully', ['name' => $user->name]));
         } catch (\Throwable $th) {
-            return back()->with('error', __('app.label.deleted_error', ['name' => $user->name]) . $th->getMessage());
+            report($th);
+            return back()->with('error', __('app.label.deleted_error', ['name' => $user->name]));
         }
     }
 
     public function destroyBulk(Request $request)
     {
         try {
-            $user = User::whereIn('id', $request->id);
+            $user = User::whereIn('id', $request->id)->whereKeyNot(auth()->id());
+            if (! auth()->user()->isSuperAdmin()) {
+                $user->whereDoesntHave('roles', fn ($query) => $query->where('name', 'superadmin'));
+            }
             $user->delete();
             return back()->with('success', __('app.label.deleted_successfully', ['name' => count($request->id) . ' ' . __('app.label.user')]));
         } catch (\Throwable $th) {
-            return back()->with('error', __('app.label.deleted_error', ['name' => count($request->id) . ' ' . __('app.label.user')]) . $th->getMessage());
+            report($th);
+            return back()->with('error', __('app.label.deleted_error', ['name' => count($request->id) . ' ' . __('app.label.user')]));
+        }
+    }
+
+    /**
+     * Only a superadmin may modify or delete a superadmin account.
+     */
+    private function ensureCanManage(User $user): void
+    {
+        if ($user->isSuperAdmin() && ! auth()->user()->isSuperAdmin()) {
+            abort(403);
         }
     }
 }

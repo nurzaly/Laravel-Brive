@@ -3,6 +3,7 @@
 namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 class UserUpdateRequest extends FormRequest
@@ -18,6 +19,18 @@ class UserUpdateRequest extends FormRequest
     }
 
     /**
+     * Role rules: must exist, and only a superadmin may assign the superadmin role.
+     */
+    protected function roleRules(): array
+    {
+        $rules = ['required', 'string', Rule::exists('roles', 'name')];
+        if (! $this->user()->isSuperAdmin()) {
+            $rules[] = Rule::notIn(['superadmin']);
+        }
+        return $rules;
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, mixed>
@@ -26,10 +39,10 @@ class UserUpdateRequest extends FormRequest
     {
         return [
             'name'                  => ['required', 'string', 'max:255'],
-            'email'                 => 'required|unique:users,email,' . $this->user,
+            'email'                 => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($this->route('user'))],
             'password'              => ['nullable', 'confirmed', Password::defaults()],
             'password_confirmation' => 'sometimes|required_with:password|same:password',
-            'role'                  => ['required'],
+            'role'                  => $this->roleRules(),
         ];
     }
 }

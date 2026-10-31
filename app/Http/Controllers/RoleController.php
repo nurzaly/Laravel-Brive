@@ -29,17 +29,19 @@ class RoleController extends Controller
     public function index(RoleIndexRequest $request)
     {
         $roles = Role::query();
-        if ($request->has('search')) {
-            $roles->where('name', 'LIKE', "%" . $request->search . "%");
-            $roles->orWhere('guard_name', 'LIKE', "%" . $request->search . "%");
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $roles->where(function ($query) use ($search) {
+                $query->where('name', 'LIKE', "%{$search}%")
+                    ->orWhere('guard_name', 'LIKE', "%{$search}%");
+            });
         }
         if ($request->has(['field', 'order'])) {
             $roles->orderBy($request->field, $request->order);
         }
         $roles->with('permissions');
-        $role = auth()->user()->roles->pluck('name')[0];
         $permissions = Permission::latest();
-        if ($role != 'superadmin') {
+        if (! auth()->user()->isSuperAdmin()) {
             $permissions = Permission::whereNotIn('name', ['create permission', 'read permission', 'update permission', 'delete permission'])->latest();
             $roles->where('name', '<>', 'superadmin');
         }
@@ -82,7 +84,8 @@ class RoleController extends Controller
             return back()->with('success', __('app.label.created_successfully', ['name' => $role->name]));
         } catch (\Throwable $th) {
             DB::rollback();
-            return back()->with('error', __('app.label.created_error', ['name' => __('app.label.role')]) . $th->getMessage());
+            report($th);
+            return back()->with('error', __('app.label.created_error', ['name' => __('app.label.role')]));
         }
     }
 
@@ -117,6 +120,7 @@ class RoleController extends Controller
      */
     public function update(RoleUpdateRequest $request, Role $role)
     {
+        $this->ensureCanManage($role);
         DB::beginTransaction();
         try {
             $role->update([
@@ -127,7 +131,8 @@ class RoleController extends Controller
             return back()->with('success', __('app.label.updated_successfully', ['name' => $role->name]));
         } catch (\Throwable $th) {
             DB::rollback();
-            return back()->with('error', __('app.label.updated_error', ['name' => $role->name]) . $th->getMessage());
+            report($th);
+            return back()->with('error', __('app.label.updated_error', ['name' => $role->name]));
         }
     }
 
@@ -139,11 +144,13 @@ class RoleController extends Controller
      */
     public function destroy(Role $role)
     {
+        $this->ensureCanManage($role);
         try {
             $role->delete();
             return back()->with('success', __('app.label.deleted_successfully', ['name' => $role->name]));
         } catch (\Throwable $th) {
-            return back()->with('error', __('app.label.deleted_error', ['name' => $role->name]) . $th->getMessage());
+            report($th);
+            return back()->with('error', __('app.label.deleted_error', ['name' => $role->name]));
         }
     }
 
@@ -151,10 +158,24 @@ class RoleController extends Controller
     {
         try {
             $role = Role::whereIn('id', $request->id);
+            if (! auth()->user()->isSuperAdmin()) {
+                $role->where('name', '<>', 'superadmin');
+            }
             $role->delete();
             return back()->with('success', __('app.label.deleted_successfully', ['name' => count($request->id) . ' ' . __('app.label.role')]));
         } catch (\Throwable $th) {
-            return back()->with('error', __('app.label.deleted_error', ['name' => count($request->id) . ' ' . __('app.label.role')]) . $th->getMessage());
+            report($th);
+            return back()->with('error', __('app.label.deleted_error', ['name' => count($request->id) . ' ' . __('app.label.role')]));
+        }
+    }
+
+    /**
+     * Only a superadmin may modify or delete the superadmin role.
+     */
+    private function ensureCanManage(Role $role): void
+    {
+        if ($role->name === 'superadmin' && ! auth()->user()->isSuperAdmin()) {
+            abort(403);
         }
     }
 }

@@ -31,9 +31,12 @@ class PermissionController extends Controller
     public function index(PermissionIndexRequest $request)
     {
         $permissions = Permission::query();
-        if ($request->has('search')) {
-            $permissions->where('name', 'LIKE', "%" . $request->search . "%");
-            $permissions->orWhere('guard_name', 'LIKE', "%" . $request->search . "%");
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $permissions->where(function ($query) use ($search) {
+                $query->where('name', 'LIKE', "%{$search}%")
+                    ->orWhere('guard_name', 'LIKE', "%{$search}%");
+            });
         }
         if ($request->has(['field', 'order'])) {
             $permissions->orderBy($request->field, $request->order);
@@ -77,7 +80,8 @@ class PermissionController extends Controller
             return back()->with('success', __('app.label.created_successfully', ['name' => $permission->name]));
         } catch (\Throwable $th) {
             DB::rollback();
-            return back()->with('error', __('app.label.created_error', ['name' => __('app.label.permission')]) . $th->getMessage());
+            report($th);
+            return back()->with('error', __('app.label.created_error', ['name' => __('app.label.permission')]));
         }
     }
 
@@ -124,7 +128,8 @@ class PermissionController extends Controller
             return back()->with('success', __('app.label.updated_successfully', ['name' => $permission->name]));
         } catch (\Throwable $th) {
             DB::rollback();
-            return back()->with('error', __('app.label.updated_error', ['name' => $permission->name]) . $th->getMessage());
+            report($th);
+            return back()->with('error', __('app.label.updated_error', ['name' => $permission->name]));
         }
     }
 
@@ -145,7 +150,8 @@ class PermissionController extends Controller
             return back()->with('success', __('app.label.deleted_successfully', ['name' => $permission->name]));
         } catch (\Throwable $th) {
             DB::rollback();
-            return back()->with('error', __('app.label.deleted_error', ['name' => $permission->name]) . $th->getMessage());
+            report($th);
+            return back()->with('error', __('app.label.deleted_error', ['name' => $permission->name]));
         }
     }
 
@@ -156,7 +162,8 @@ class PermissionController extends Controller
             $permission->delete();
             return back()->with('success', __('app.label.deleted_successfully', ['name' => count($request->id) . ' ' . __('app.label.permission')]));
         } catch (\Throwable $th) {
-            return back()->with('error', __('app.label.deleted_error', ['name' => count($request->id) . ' ' . __('app.label.permission')]) . $th->getMessage());
+            report($th);
+            return back()->with('error', __('app.label.deleted_error', ['name' => count($request->id) . ' ' . __('app.label.permission')]));
         }
     }
 }
